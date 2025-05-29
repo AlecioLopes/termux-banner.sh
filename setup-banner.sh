@@ -8,7 +8,6 @@ YELLOW='\033[1;33m'
 RESET='\033[0m'
 
 clear
-
 echo -e "${CYAN}====== INICIANDO SETUP AUTOMÁTICO DO BANNER ======${RESET}"
 
 # Atualizando os pacotes
@@ -20,28 +19,48 @@ echo -e "${YELLOW}→ Solicitando permissão de armazenamento...${RESET}"
 termux-setup-storage
 sleep 2
 
-# Instalando Git
-echo -e "${YELLOW}→ Instalando o Git...${RESET}"
-pkg install git -y
+# Verificando se git está instalado
+if ! command -v git &> /dev/null; then
+    echo -e "${RED}→ Git não encontrado. Instalando...${RESET}"
+    pkg install git -y
+else
+    echo -e "${GREEN}→ Git já está instalado.${RESET}"
+fi
+
+# Verificando se nano está instalado
+if ! command -v nano &> /dev/null; then
+    echo -e "${RED}→ Nano não encontrado. Instalando...${RESET}"
+    pkg install nano -y
+else
+    echo -e "${GREEN}→ Nano já está instalado.${RESET}"
+fi
 
 # Clonando repositório
-echo -e "${YELLOW}→ Clonando repositório do banner...${RESET}"
+echo -e "${CYAN}→ Clonando o repositório...${RESET}"
 git clone https://github.com/edielsontube/baneredielsontube
 
 # Acessando diretório
 cd baneredielsontube || { echo -e "${RED}Erro: diretório não encontrado.${RESET}"; exit 1; }
 
-# Editando o bash.bashrc
-echo -e "${GREEN}→ Agora vamos personalizar o texto do banner.${RESET}"
-echo -e "${CYAN}Edite a linha onde aparece: 'INSCREVA-SE' para o que quiser.${RESET}"
-echo -e "${CYAN}Use as setas para navegar, e após editar:${RESET}"
+# Solicitando entrada personalizada
+echo -e "${CYAN}→ Qual texto você quer no lugar de 'INSCREVA-SE'?${RESET}"
+read -p "Digite seu nome ou frase personalizada: " user_text
+
+# Substituindo o texto
+sed -i "s/INSCREVA-SE/${user_text}/g" bash.bashrc
+
+# Edição manual opcional
+echo -e "${GREEN}→ Caso deseje ajustar mais detalhes do banner:${RESET}"
+echo -e "${CYAN}Use as setas para navegar até o texto desejado.${RESET}"
 echo -e "${YELLOW}Para salvar: pressione Ctrl + O, depois Enter${RESET}"
 echo -e "${YELLOW}Para sair: pressione Ctrl + X${RESET}"
 sleep 5
 nano bash.bashrc
 
 # Executando o script do banner
-echo -e "${GREEN}→ Aplicando o banner...${RESET}"
+echo -e "${YELLOW}→ Aplicando o banner...${RESET}"
 bash baner.sh
 
-echo -e "${CYAN}====== SETUP FINALIZADO COM SUCESSO! 😎 ======${RESET}"
+echo -e "${GREEN}✔️ Setup finalizado com sucesso! Reinicie o Termux para ver o novo banner.${RESET}"
+
+#Todos os direitos reservados a Layout's (Alécio Lopes)
